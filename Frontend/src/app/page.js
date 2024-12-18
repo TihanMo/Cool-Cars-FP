@@ -1,7 +1,6 @@
 "use client"
 
 import {useState} from "react";
-import CarForm from "@/app/carform/page";
 import Link from "next/link";
 
 
@@ -9,10 +8,14 @@ export default function Home() {
   const [cars, setCars] = useState([])
 
   function buttonHandler() {
-    fetch("http://localhost:8080/cars")
-      .then(response => response.json())
-      .then(data => setCars(data))
+    if (cars.length === 0) {
+      fetch("http://localhost:8080/cars")
+        .then(response => response.json())
+        .then(data => setCars(data))
+        .catch(error => console.error("Error fetching cars:", error));
+    }
   }
+  
 
   return (
     <div className="App">
@@ -26,7 +29,10 @@ export default function Home() {
             </li>
           )}
         </ul>
-        <Link href="/carform">add a new car</Link>
+        <Link href="/carform">
+          <button>Add a new car</button>
+        </Link>
+
     </div>
   )
 }

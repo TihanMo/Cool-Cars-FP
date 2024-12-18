@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -43,4 +45,10 @@ public class CarController implements ApplicationRunner {
     public Car getACar(@PathVariable int id) {
         return new Car(id, "Ford", "Mustang", 450);
     }
+
+    @PostMapping("/cars")
+    public Car addCar(@RequestBody Car newCar) {
+        return carRepository.save(newCar);
+    }
+
 }

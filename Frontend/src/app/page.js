@@ -9,6 +9,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [sortOrder, setSortOrder] = useState({ type: 'brand', order: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
+  const [filter, setFilter] = useState('');
   const carsPerPage = 6;
 
   useEffect(() => {
@@ -24,46 +25,48 @@ export default function Home() {
       });
   }, []);
 
-  function sortCars(type, order) {
+  function sortCars(type) {
+    let order = 'asc';
+    if (sortOrder.type === type) {
+      order = sortOrder.order === 'asc' ? 'desc' : 'asc';
+    }
     const sortedCars = [...cars].sort((a, b) => {
-      const comparison = a[type].localeCompare(b[type]);
+      let comparison;
+      if (type === 'horsePower') {
+        comparison = a[type] - b[type];
+      } else {
+        comparison = a[type].localeCompare(b[type]);
+      }
       return order === 'asc' ? comparison : -comparison;
     });
     setCars(sortedCars);
+    setSortOrder({ type, order });
   }
 
-  function handleSortChange(event) {
-    const { name, value } = event.target;
-    const newSortOrder = { ...sortOrder, [name]: value };
-    setSortOrder(newSortOrder);
-    sortCars(newSortOrder.type, newSortOrder.order);
+  function handleFilterChange(event) {
+    setFilter(event.target.value.trim().toLowerCase());
   }
+  
+  const filteredCars = cars.filter((car) => {
+    return (
+      car.brand.toLowerCase().includes(filter) ||
+      car.model.toLowerCase().includes(filter)
+    );
+  });
 
-  // Calculate the cars to display on the current page
   const indexOfLastCar = currentPage * carsPerPage;
   const indexOfFirstCar = indexOfLastCar - carsPerPage;
-  const currentCars = cars.slice(indexOfFirstCar, indexOfLastCar);
+  const currentCars = filteredCars.slice(indexOfFirstCar, indexOfLastCar);
 
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="App">
       <main>
-        <div className="sort-controls">
+        <div className="filter-controls">
           <label>
-            Sort by:
-            <select name="type" value={sortOrder.type} onChange={handleSortChange}>
-              <option value="brand">Brand</option>
-              <option value="model">Model</option>
-            </select>
-          </label>
-          <label>
-            Order:
-            <select name="order" value={sortOrder.order} onChange={handleSortChange}>
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
+            Filter:
+            <input type="text" value={filter} onChange={handleFilterChange} placeholder="Filter by brand or model" />
           </label>
         </div>
         <br/>
@@ -74,9 +77,15 @@ export default function Home() {
             <table>
               <thead>
                 <tr>
-                  <th>Brand</th>
-                  <th>Model</th>
-                  <th>Horse Power</th>
+                  <th onClick={() => sortCars('brand')} style={{cursor: 'pointer'}}>
+                    Brand {sortOrder.type === 'brand' && (sortOrder.order === 'asc' ? '▲' : '▼')}
+                  </th>
+                  <th onClick={() => sortCars('model')} style={{cursor: 'pointer'}}>
+                    Model {sortOrder.type === 'model' && (sortOrder.order === 'asc' ? '▲' : '▼')}
+                  </th>
+                  <th onClick={() => sortCars('horsePower')} style={{cursor: 'pointer'}}>
+                    Horse Power {sortOrder.type === 'horsePower' && (sortOrder.order === 'asc' ? '▲' : '▼')}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -93,7 +102,7 @@ export default function Home() {
               <button className="arrow" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1}>
                 &larr;
               </button>
-              {Array.from({ length: Math.ceil(cars.length / carsPerPage) }, (_, index) => (
+              {Array.from({ length: Math.ceil(filteredCars.length / carsPerPage) }, (_, index) => (
                 <button
                   key={index + 1}
                   onClick={() => paginate(index + 1)}
@@ -102,7 +111,7 @@ export default function Home() {
                   {index + 1}
                 </button>
               ))}
-              <button className="arrow" onClick={() => paginate(currentPage + 1)} disabled={currentPage === Math.ceil(cars.length / carsPerPage)}>
+              <button className="arrow" onClick={() => paginate(currentPage + 1)} disabled={currentPage === Math.ceil(filteredCars.length / carsPerPage)}>
                 &rarr;
               </button>
             </div>

@@ -10,7 +10,7 @@ export default function Home() {
   const [sortOrder, setSortOrder] = useState({ type: 'brand', order: 'asc' });
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState('');
-  const carsPerPage = 6;
+  const carsPerPage = 8;
 
   useEffect(() => {
     fetch("http://localhost:8080/cars")

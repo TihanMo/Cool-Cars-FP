@@ -1,0 +1,48 @@
+/* /carform/styles.css */
+.carFormContainer {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .carFormTitle {
+    text-align: center;
+  }
+  
+  .carForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .carFormInput {
+    width: 100%;
+    padding: 5px;
+    margin: 5px 0;
+    box-sizing: border-box;
+  }
+  
+  .carFormButton {
+    padding: 10px;
+    background-color: #0070f3;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .carFormButton:hover,
+  .carFormButton:focus {
+    background-color: #005bb5;
+  }
+  
+  .carFormBackButton {
+    padding: 10px;
+    background-color: gray;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+  }

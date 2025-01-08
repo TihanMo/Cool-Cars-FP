@@ -1,6 +1,9 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import "./styles.css";
 
 export default function CarForm() {
   const [car, setCar] = useState({
@@ -16,7 +19,7 @@ export default function CarForm() {
     setCar({ ...car, [name]: value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     if (!car.brand || !car.model || !car.horsePower) {
@@ -24,32 +27,39 @@ export default function CarForm() {
       return;
     }
 
-    fetch("http://localhost:8080/cars", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...car,
-        horsePower: parseInt(car.horsePower, 10),
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          alert("Car added successfully!");
-          router.push("/");
-        } else {
-          throw new Error("Failed to add car");
-        }
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        alert("An error occurred while adding the car.");
+    if (parseInt(car.horsePower, 10) <= 0) {
+      alert("Horse power must be a positive number.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/cars", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...car,
+          horsePower: parseInt(car.horsePower, 10),
+        }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error response text:", errorText);
+        throw new Error(`Failed to add car. Server response: ${errorText}`);
+      }
+
+      alert("Car added successfully!");
+      router.push("/");
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`An error occurred while adding the car: ${error.message}`);
+    }
   }
 
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
-      <h1 style={{ textAlign: "center" }}>Add a New Car</h1>
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div className="carFormContainer">
+      <h1 className="carFormTitle">Add a New Car</h1>
+      <form onSubmit={handleSubmit} className="carForm">
         <label>
           Brand:
           <input
@@ -57,7 +67,7 @@ export default function CarForm() {
             value={car.brand}
             onChange={handleChange}
             required
-            style={{ width: "100%", padding: "5px", margin: "5px 0" }}
+            className="carFormInput"
           />
         </label>
         <label>
@@ -67,7 +77,7 @@ export default function CarForm() {
             value={car.model}
             onChange={handleChange}
             required
-            style={{ width: "100%", padding: "5px", margin: "5px 0" }}
+            className="carFormInput"
           />
         </label>
         <label>
@@ -78,13 +88,18 @@ export default function CarForm() {
             value={car.horsePower}
             onChange={handleChange}
             required
-            style={{ width: "100%", padding: "5px", margin: "5px 0" }}
+            className="carFormInput"
           />
         </label>
-        <button type="submit" style={{ padding: "10px", backgroundColor: "#0070f3", color: "#fff", border: "none", cursor: "pointer" }}>
+        <button type="submit" className="carFormButton">
           Add Car
         </button>
       </form>
+      <Link href="/">
+        <button className="carFormBackButton">
+          Back
+        </button>
+      </Link>
     </div>
   );
 }

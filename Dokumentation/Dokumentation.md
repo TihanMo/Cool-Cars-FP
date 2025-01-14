@@ -90,7 +90,7 @@ Der `useState`-Hook verwendet ebenfalls ein **Immutable State Management**, bei 
 ---
 
 ## Notengebung
-**Selbsteinschätzung:** 9/10  
+**Selbsteinschätzung:** 5.5
 **Begründung:**  
 Ich habe alle Anforderungen des Projekts erfüllt, funktionale Konzepte korrekt implementiert und den Code gut strukturiert. Verbesserungsbedarf sehe ich bei der erweiterten Nutzung von **Composition Functions**.
 
